@@ -1,4 +1,6 @@
-misc/dist_builtin.vim
-tests/log.txt-*
-**/DBG
-bin/tags
+/vendor/
+.*
+composer.lock
+
+# Ignore deoplete source cache
+*.py[cod]
