@@ -6,6 +6,7 @@ use Lvht\MsgpackRpc\Server as RpcServer;
 use Lvht\MsgpackRpc\Handler as RpcHandler;
 
 use Roave\BetterReflection\BetterReflection;
+use Roave\BetterReflection\Reflection\ReflectionUnionType;
 use Roave\BetterReflection\Reflector\DefaultReflector;
 use Roave\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber;
 use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
@@ -415,11 +416,26 @@ class PHPCD implements RpcHandler
         }
 
         $type = $this->argTypeByHint($class_name, $func_name, $name, $path);
+        if ($type instanceof ReflectionUnionType) {
+            $types = [];
+            foreach ($type->getTypes() as $t) {
+                if (!$t->isBuiltin()) {
+                    array_push($types, "\\".$t->getName());
+                }
+            }
+            if ($types) {
+                return $types;
+            }
+        }
         if ($type && !$type->isBuiltin()) {
             return ["\\".$type->getName()];
         }
 
         list($path, $doc) = $this->doc($class_name, $func_name, true, $path);
+        if (!$doc) {
+            return [];
+        }
+
         return $this->argTypeByDoc($path, $doc, $name);
     }
 
@@ -644,7 +660,7 @@ class PHPCD implements RpcHandler
             $source_locator = new SingleFileSourceLocator($path, $ast_locator);
             $class_reflector = new DefaultReflector($source_locator);
             $reflector = new DefaultReflector($source_locator, $class_reflector);
-            $reflection = $reflector->reflect($name);
+            $reflection = $reflector->reflectFunction($name);
         }
 
         return $reflection;
@@ -662,7 +678,7 @@ class PHPCD implements RpcHandler
             $locator = new AggregateSourceLocator([$source_locator, $autoload_locator, $internal_locator]);
             $reflector = new DefaultReflector($locator);
 
-            $reflection = $reflector->reflect($class_name);
+            $reflection = $reflector->reflectClass($class_name);
         }
 
         return $reflection;

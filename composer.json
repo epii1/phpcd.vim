@@ -13,7 +13,7 @@
         "psr/log": "^1.0",
         "lvht/msgpack-rpc": "master-dev",
         "monolog/monolog": "^1.20",
-        "roave/better-reflection": "5.0.x-dev"
+        "roave/better-reflection": "^5.0"
     },
     "config": {
       "classmap-authoritative": true
