@@ -6,8 +6,8 @@ use Lvht\MsgpackRpc\Server as RpcServer;
 use Lvht\MsgpackRpc\Handler as RpcHandler;
 
 use Roave\BetterReflection\BetterReflection;
-use Roave\BetterReflection\Reflector\ClassReflector;
-use Roave\BetterReflection\Reflector\FunctionReflector;
+use Roave\BetterReflection\Reflector\DefaultReflector;
+use Roave\BetterReflection\SourceLocator\SourceStubber\ReflectionSourceStubber;
 use Roave\BetterReflection\SourceLocator\Type\SingleFileSourceLocator;
 use Roave\BetterReflection\SourceLocator\Type\PhpInternalSourceLocator;
 use Roave\BetterReflection\SourceLocator\Type\AutoloadSourceLocator;
@@ -468,7 +468,7 @@ class PHPCD implements RpcHandler
                 if ($reflection->hasProperty($name)) {
                     $t = $reflection->getProperty($name)->getType();
                     if ($t != null) {
-			$name = $t->getName();
+                        $name = $t->getName();
                         $this->logger->debug($name);
                         return $this->fixRelativeType($path, [$name]);
                     }
@@ -642,8 +642,8 @@ class PHPCD implements RpcHandler
         } else {
             $ast_locator = (new BetterReflection())->astLocator();
             $source_locator = new SingleFileSourceLocator($path, $ast_locator);
-            $class_reflector = new ClassReflector($source_locator);
-            $reflector = new FunctionReflector($source_locator, $class_reflector);
+            $class_reflector = new DefaultReflector($source_locator);
+            $reflector = new DefaultReflector($source_locator, $class_reflector);
             $reflection = $reflector->reflect($name);
         }
 
@@ -657,10 +657,10 @@ class PHPCD implements RpcHandler
         } else {
             $ast_locator = (new BetterReflection())->astLocator();
             $source_locator = new SingleFileSourceLocator($path, $ast_locator);
-            $internal_locator = new PhpInternalSourceLocator($ast_locator);
+            $internal_locator = new PhpInternalSourceLocator($ast_locator, new ReflectionSourceStubber());
             $autoload_locator = new AutoloadSourceLocator($ast_locator);
             $locator = new AggregateSourceLocator([$source_locator, $autoload_locator, $internal_locator]);
-            $reflector = new ClassReflector($locator);
+            $reflector = new DefaultReflector($locator);
 
             $reflection = $reflector->reflect($class_name);
         }

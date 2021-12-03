@@ -5,7 +5,7 @@ set_error_handler(function ($severity, $message, $file, $line) {
     throw new ErrorException($message, 0, $severity, $file, $line);
 });
 
-$root   = $argv[1];
+$root = $argv[1];
 $messenger = $argv[2];
 $autoload_file = $argv[3];
 $disable_modifier = $argv[4];

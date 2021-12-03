@@ -2,8 +2,8 @@
     "name": "phpvim/phpcd.vim",
     "authors": [
         {
-            "name": "吕海涛",
-            "email": "git@lvht.net"
+            "name": "涛叔",
+            "email": "hi@taoshu.in"
         }
     ],
     "autoload": {
@@ -11,10 +11,9 @@
     },
     "require": {
         "psr/log": "^1.0",
-        "lvht/msgpack-rpc": "^0.2.1",
+        "lvht/msgpack-rpc": "master-dev",
         "monolog/monolog": "^1.20",
-        "ext-json": "*",
-        "roave/better-reflection": "^3.0"
+        "roave/better-reflection": "5.0.x-dev"
     },
     "config": {
       "classmap-authoritative": true
